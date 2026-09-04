@@ -1,133 +1,92 @@
-# AGENTS.md — Menu 2FA handoff for future AI sessions
+# AGENTS.md — Arbeitsregeln für AI-Sessions
 
-Read this file before editing. Prefer facts here over inventing product behavior.
+Zuerst [`README.md`](./README.md) lesen (Was / Wo / Architektur).  
+Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll.
 
-## What this project is
+## Harte Grenzen
 
-**Menu 2FA** is a native **macOS menu bar** TOTP authenticator (SwiftUI + AppKit).
+1. Nur in `/Users/gabriel/Menu 2FA` arbeiten. **Nie** Menu Launcher überschreiben.
+2. Keine echten TOTP-Secrets, Recovery-Codes oder `.env` committen.
+3. Keine Screenshots/Videos erfinden — Medien liefert der Mensch.
+4. Marketing/Privacy: Speicherung ist **UserDefaults (`authItems`)**, nicht Keychain (solange der Code das nicht ändert).
+5. Nach Strukturänderungen: `README.md` und diese Datei aktualisieren.
 
-- Same overall UX pattern as **Menu Launcher** (settings list + menu bar), but copies codes instead of opening apps.
-- **Do not overwrite** `/Users/gabriel/Menu Launcher`. Work only in `/Users/gabriel/Menu 2FA`.
-- Website marketing/support lives in `/Users/gabriel/sgroi.ga` (separate repo/site).
+## Was die App tun muss (Nicht-Regression)
 
-## Paths & IDs
+### Menüleiste
 
-| Item | Value |
+- Idle: SF Symbol `lock.fill` (Template).
+- Linksklick + Konten → Codes-Menü; Auswahl **kopiert** 6-stelligen TOTP.
+- Erfolgreiches Copy → kurz Checkmark-Feedback.
+- App Lock an → vor Codes-Menü `LocalAuthentication` (`deviceOwnerAuthentication`).
+- Rechtsklick / Control-Klick / leere Liste → Kontext: Settings, Require Authentication, Launch at Login, Quit.
+- Codes-Menü offen → Countdown-Ring ab 12 Uhr, **im Uhrzeigersinn**, Lücke = Restzeit (30 s).
+
+### Settings
+
+- Liste mit Pfeilen (Reorder), `+`, `…` (Edit/Delete).
+- Sheet: Bild (Choose/Remove + Drop), optional Emoji, optional URL (Favicon), Titel, Token.
+- Token-Feld: **kein Placeholder**, kein Beispielsecret.
+- Token: Base32 oder `otpauth://`.
+
+### Persistenz
+
+- Konten: `UserDefaults` → `authItems` (JSON `[LaunchItem]`).
+- App Lock: `requireAuthentication`.
+- Kein Cloud-Sync für Secrets.
+
+### Icon-Priorität
+
+Custom image → Emoji → URL-Favicon → Lock-Placeholder.
+
+## Datei → Verantwortung (Kurz)
+
+| Datei | Verantwortung |
 | --- | --- |
-| Project root | `/Users/gabriel/Menu 2FA` |
-| Xcode | `Menu 2FA.xcodeproj` |
-| Sources | `Menu 2FA/*.swift` (PBXFileSystemSynchronizedRootGroup — files auto-picked up) |
-| Bundle ID | `ga.sgroi.menu-2fa` |
-| Team | `AUP84ZCD2B` |
-| Deployment target | macOS 15.0 |
-| App Store Connect app | `6806774047` |
-| GitHub | `https://github.com/0nhub/menu-2fa` |
-| iCloud backup copy (may lag) | `~/Library/Mobile Documents/com~apple~CloudDocs/Menu 2FA` |
+| `Menu_2FAApp.swift` | Entry, Accessory, Status Item installieren |
+| `StatusItemController.swift` | Menüleiste / Menüs / Ring / Copy-Feedback / Lock-Gate |
+| `TOTP.swift` | Crypto + Restzeit |
+| `LaunchItem.swift` | Modell + Icon zeichnen |
+| `LaunchItemStore.swift` | CRUD + Pasteboard |
+| `EditorView.swift` | Settings-Liste |
+| `EditorWindowController.swift` | Fenster |
+| `ItemEditorView.swift` | Add/Edit |
+| `AppLock.swift` | LAContext-Gate |
+| `LaunchAtLogin.swift` | Login Item |
+| `IconURLFetcher.swift` | Netzwerk nur für Favicons |
+| `Localizable.xcstrings` | Strings |
+| `launch.sh` | Debug-App neu öffnen |
 
-## Product behavior (do not regress)
+Xcode: Ordner `Menu 2FA/` ist **PBXFileSystemSynchronizedRootGroup** — neue Swift-Dateien dort werden auto-inkludiert.
 
-### Menu bar
+## IDs
 
-- Closed: **lock** SF Symbol (`lock.fill`), template image.
-- Left-click with accounts: show account list → selecting an item **copies** the current 6-digit TOTP to the clipboard. Brief **checkmark** feedback on success.
-- If **App Lock** is enabled, left-click codes require LocalAuthentication (`deviceOwnerAuthentication` — Touch ID or Mac password) before showing the codes menu.
-- Left-click with empty list / right-click / Control-click: context menu — **Settings**, **Require Authentication** (App Lock toggle), **Launch at Login**, **Quit**.
-- While the codes menu is open: status icon becomes a **countdown ring**. Starts at 12 o’clock, fills **clockwise**, full circle = period elapsed; open gap = remaining time (30s TOTP).
+- Bundle: `ga.sgroi.menu-2fa`
+- Team: `AUP84ZCD2B`
+- Deployment: macOS 15.0+
+- ASC App: `6806774047`
+- GitHub (privat): `https://github.com/0nhub/menu-2fa`
 
-### Settings window
+## Website (separates Repo `sgroi.ga`)
 
-- List of accounts with reorder (arrows), `+`, and `…` (Edit / Delete).
-- Add/Edit dialog (`ItemEditorView`): icon (Choose Image / Remove Icon + drag & drop), optional **emoji**, optional **URL** (favicon fetch), title, token.
-- Token field: **no placeholder**, no example secret in the field.
-- Token accepts Base32 secrets and `otpauth://` URIs (`TOTP.fields(from:)`).
+Bei geänderten Produktaussagen mitpflegen:
 
-### TOTP
+- `src/pages/menu-2fa.html` + DE-Variante
+- Privacy `#authenticator`, Terms (Secrets/Codes)
+- `src/data/support-overrides.json`, `src/data/projects.json`
+- Build: `python3 src/scripts/build.py`
 
-- `TOTP.swift`: Base32 decode, HMAC-SHA1, 6 digits, 30s period.
-- Invalid secrets → copy fails with a warning alert.
+## App-Store-Kontext (Stand)
 
-### Persistence
+Frühere Ablehnung: Guideline **2.1 Information Needed** (Screen Recording + Review-Notes), kein Crash-Bug. Review-Video hängt der Mensch an die ASC-Antwort.
 
-- Accounts: `UserDefaults` key **`authItems`** (JSON `[LaunchItem]`).
-- App Lock preference: `requireAuthentication`.
-- No cloud sync. Do **not** claim Keychain in marketing unless code actually moves there.
+## Smoke nach Änderungen
 
-### Icons for an account (priority)
-
-1. Custom image (`iconData`)
-2. Emoji (`emoji`)
-3. Favicon from URL (`urlIconData` via `IconURLFetcher`)
-4. Default lock placeholder
-
-### App identity
-
-- Accessory app (`NSApp.setActivationPolicy(.accessory)`).
-- Dock/reopen → Settings.
-- Official logo resource: `Menu2FALogo.png` applied as `NSApp.applicationIconImage`.
-- Asset catalogs: `AppIcon` + `ApplicationIcon`.
-
-## Important source files
-
-| File | Role |
-| --- | --- |
-| `Menu_2FAApp.swift` | App entry, accessory policy, status item install |
-| `StatusItemController.swift` | Menu bar, copy, countdown ring, App Lock gate, copy checkmark |
-| `TOTP.swift` | Base32 + TOTP generation / remaining / progress |
-| `LaunchItem.swift` | Account model + icon rendering |
-| `LaunchItemStore.swift` | CRUD + clipboard copy (+ async pasteboard retry) |
-| `ItemEditorView.swift` | Add/Edit sheet |
-| `EditorView.swift` / `EditorWindowController.swift` | Settings UI / window |
-| `LaunchAtLogin.swift` | Login item helper |
-| `AppLock.swift` | LocalAuthentication gate + preference |
-| `IconURLFetcher.swift` | Favicon / URL icon download |
-| `Localizable.xcstrings` | Strings (many locales) |
-| `launch.sh` | Kill + reopen Debug build from DerivedData |
-
-## Naming debt (intentional)
-
-Types still say **LaunchItem** / **LaunchItemStore** from the Menu Launcher fork. Prefer keeping names unless doing a deliberate rename refactor (touches many files + UserDefaults migration care).
-
-## Build / run notes
-
-- Prefer Xcode GUI if `xcodebuild -license` is not accepted on the machine.
-- Ignore `DerivedData/` (local builds); never commit it.
-- `launch.sh` points at a local DerivedData Debug app path — update if build location changes.
-
-## App Store / review (context)
-
-- Rejection seen: **Guideline 2.1 Information Needed** (screen recording + review notes), not a code crash.
-- Reply + Notes should describe: menu bar launch, add account, copy code, countdown, no login, local-only, no external TOTP backend.
-- Tested hardware example: iMac (Mac16,3) M4, macOS 26.5.2.
-- Review screen recording is attached by the human in App Store Connect (**Datei anhängen** on the reply), not as optional App Preview only.
-- Marketing text must not say **Keychain** while storage is UserDefaults.
-
-## Related website (`sgroi.ga`)
-
-Update these when product claims change:
-
-- Project: `src/pages/menu-2fa.html` + `src/pages/de/menu-2fa.html` → build to `/src/projects/menu-2fa/`
-- Privacy: authenticator section (`#authenticator`)
-- Terms: secrets / one-time code responsibility
-- Support: local overrides in `src/data/support-overrides.json` (merged over AppBackend feed for Menu 2FA)
-- Project meta: `src/data/projects.json`
-- Rebuild: `python3 src/scripts/build.py` from the site repo
-
-## Rules for agents
-
-1. **Never** modify Menu Launcher when working on Menu 2FA.
-2. **Never** commit secrets, real TOTP seeds, or `.env` files.
-3. Do not invent screenshots/video assets; user supplies App Store / site media.
-4. Match existing Swift style; keep menu bar UX snappy and local-first.
-5. If adding network features beyond favicon fetch, update Privacy + App Review notes.
-6. After structural changes, update this file and `README.md`.
-
-## Smoke checklist after changes
-
-- [ ] App appears in menu bar as lock icon
-- [ ] Add account with Base32 and with `otpauth://`
-- [ ] Left-click copies 6-digit code; checkmark feedback
-- [ ] Countdown ring while codes menu open
-- [ ] Right-click: Settings, App Lock, Launch at Login, Quit
-- [ ] App Lock blocks codes until auth succeeds
-- [ ] Edit/delete/reorder accounts persist after relaunch
-- [ ] Icon priority: image → emoji → URL favicon → default
+- [ ] Lock-Icon in der Menüleiste
+- [ ] Account mit Base32 und mit `otpauth://` anlegen
+- [ ] Linksklick kopiert Code + Checkmark
+- [ ] Countdown-Ring bei offenem Codes-Menü
+- [ ] Rechtsklick: Settings / Lock / Login / Quit
+- [ ] App Lock blockiert Codes bis Auth OK
+- [ ] Edit/Delete/Reorder überlebt Neustart
+- [ ] Icon-Priorität stimmt
