@@ -12,7 +12,11 @@ final class EditorWindowController: NSObject, NSWindowDelegate {
 
     private var window: NSWindow?
 
-    func show() {
+    func show(skipAuthentication: Bool = false) {
+        if skipAuthentication {
+            showUnlocked()
+            return
+        }
         AppLock.authorizeIfNeeded(reason: String(localized: "Authenticate to open Settings")) { [weak self] allowed in
             DispatchQueue.main.async {
                 guard allowed else { return }

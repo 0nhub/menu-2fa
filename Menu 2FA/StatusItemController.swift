@@ -22,10 +22,27 @@ final class StatusItemController: NSObject {
     }
 
     func install() {
-        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        guard let button = item.button else { return }
+        // Keep a strong reference first; some launch timing issues drop the item otherwise.
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem = item
 
-        let configuration = NSImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+        guard let button = item.button else {
+            // Retry once on the next turn if the status bar button is not ready yet.
+            DispatchQueue.main.async { [weak self] in
+                self?.configureStatusButton()
+            }
+            return
+        }
+        configure(button: button)
+    }
+
+    private func configureStatusButton() {
+        guard let button = statusItem?.button else { return }
+        configure(button: button)
+    }
+
+    private func configure(button: NSStatusBarButton) {
+        let configuration = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         let lock = NSImage(systemSymbolName: "lock.fill", accessibilityDescription: String(localized: "Menu 2FA"))?.withSymbolConfiguration(configuration)
         lock?.isTemplate = true
         lockImage = lock
@@ -34,17 +51,17 @@ final class StatusItemController: NSObject {
         check?.isTemplate = true
         checkImage = check
 
+        // Image + short title so the extra is findable even in a crowded menu bar / notch overflow.
         button.image = lock
-        button.imagePosition = .imageOnly
-        button.imageScaling = .scaleNone
-        button.toolTip = nil
+        button.title = "2FA"
+        button.imagePosition = .imageLeading
+        button.imageScaling = .scaleProportionallyDown
+        button.toolTip = String(localized: "Menu 2FA")
         button.setAccessibilityTitle(String(localized: "Menu 2FA"))
         button.wantsLayer = true
         button.sendAction(on: [.leftMouseDown, .rightMouseDown])
         button.action = #selector(handleClick(_:))
         button.target = self
-
-        statusItem = item
     }
 
     func showSettings() {
@@ -139,6 +156,7 @@ final class StatusItemController: NSObject {
     private func beginCountdown() {
         guard let button = statusItem?.button else { return }
         button.image = nil
+        button.title = ""
         let ring = CountdownRingView(frame: button.bounds)
         ring.autoresizingMask = [.width, .height]
         button.addSubview(ring)
@@ -151,13 +169,13 @@ final class StatusItemController: NSObject {
         countdownView?.removeFromSuperview()
         countdownView = nil
         if !isShowingCopyFeedback {
-            statusItem?.button?.image = lockImage
+            restoreIdleAppearance()
         }
     }
 
     private func showCopyFeedback() {
         guard let button = statusItem?.button, let checkImage else {
-            statusItem?.button?.image = lockImage
+            restoreIdleAppearance()
             return
         }
 
@@ -167,6 +185,7 @@ final class StatusItemController: NSObject {
 
         feedbackResetWorkItem?.cancel()
         isShowingCopyFeedback = true
+        button.title = ""
         button.image = checkImage
 
         if let layer = button.layer {
@@ -182,7 +201,7 @@ final class StatusItemController: NSObject {
         let work = DispatchWorkItem { [weak self] in
             guard let self else { return }
             self.isShowingCopyFeedback = false
-            self.statusItem?.button?.image = self.lockImage
+            self.restoreIdleAppearance()
             self.feedbackResetWorkItem = nil
         }
         feedbackResetWorkItem = work
@@ -195,8 +214,15 @@ final class StatusItemController: NSObject {
         isShowingCopyFeedback = false
         statusItem?.button?.layer?.removeAnimation(forKey: "copyFeedbackPop")
         if restoreKey {
-            statusItem?.button?.image = lockImage
+            restoreIdleAppearance()
         }
+    }
+
+    private func restoreIdleAppearance() {
+        guard let button = statusItem?.button else { return }
+        button.image = lockImage
+        button.title = "2FA"
+        button.imagePosition = .imageLeading
     }
 }
 

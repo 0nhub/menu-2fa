@@ -33,8 +33,10 @@ struct Menu_2FAApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let statusItemController = StatusItemController(store: .shared)
+    private static let didPresentInitialUIKey = "didPresentInitialUI"
 
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // Stay a menu-bar app, but never rely on that alone for App Review discoverability.
         NSApp.setActivationPolicy(.accessory)
         applyOfficialAppIcon()
     }
@@ -43,6 +45,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         applyOfficialAppIcon()
         statusItemController.install()
         NSApp.mainMenu?.items.first?.title = ""
+
+        // Always ensure a visible Settings window on first successful launch (and when
+        // there are no accounts yet). App Review reported neither a window nor a menu
+        // bar extra — an empty accessory launch is too easy to miss on a crowded bar.
+        let defaults = UserDefaults.standard
+        let firstUI = !defaults.bool(forKey: Self.didPresentInitialUIKey)
+        if firstUI || LaunchItemStore.shared.items.isEmpty {
+            defaults.set(true, forKey: Self.didPresentInitialUIKey)
+            // Bypass App Lock for this automatic presentation so reviewers always see UI.
+            EditorWindowController.shared.show(skipAuthentication: true)
+        }
     }
 
     private func applyOfficialAppIcon() {
