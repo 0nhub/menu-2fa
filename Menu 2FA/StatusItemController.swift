@@ -23,7 +23,7 @@ final class StatusItemController: NSObject {
 
     func install() {
         // Keep a strong reference first; some launch timing issues drop the item otherwise.
-        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem = item
 
         guard let button = item.button else {
@@ -51,10 +51,9 @@ final class StatusItemController: NSObject {
         check?.isTemplate = true
         checkImage = check
 
-        // Image + short title so the extra is findable even in a crowded menu bar / notch overflow.
         button.image = lock
-        button.title = "2FA"
-        button.imagePosition = .imageLeading
+        button.title = ""
+        button.imagePosition = .imageOnly
         button.imageScaling = .scaleProportionallyDown
         button.toolTip = String(localized: "Menu 2FA")
         button.setAccessibilityTitle(String(localized: "Menu 2FA"))
@@ -221,8 +220,8 @@ final class StatusItemController: NSObject {
     private func restoreIdleAppearance() {
         guard let button = statusItem?.button else { return }
         button.image = lockImage
-        button.title = "2FA"
-        button.imagePosition = .imageLeading
+        button.title = ""
+        button.imagePosition = .imageOnly
     }
 }
 

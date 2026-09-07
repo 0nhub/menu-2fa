@@ -5,10 +5,12 @@
 
 import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct EditorView: View {
     @Environment(LaunchItemStore.self) private var store
     @State private var session: ItemEditorSession?
+    @State private var draggingID: LaunchItem.ID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -69,12 +71,21 @@ struct EditorView: View {
                 ForEach(Array(store.items.enumerated()), id: \.element.id) { index, item in
                     EditorItemRow(
                         item: item,
-                        canMoveUp: index > 0,
-                        canMoveDown: index < store.items.count - 1,
-                        onMoveUp: { store.moveUp(item) },
-                        onMoveDown: { store.moveDown(item) },
+                        isDragging: draggingID == item.id,
                         onEdit: { session = .edit(item) },
-                        onRemove: { store.remove(item) }
+                        onRemove: { store.remove(item) },
+                        onDrag: {
+                            draggingID = item.id
+                            return NSItemProvider(object: item.id.uuidString as NSString)
+                        }
+                    )
+                    .onDrop(
+                        of: [.text],
+                        delegate: AccountReorderDropDelegate(
+                            itemID: item.id,
+                            store: store,
+                            draggingID: $draggingID
+                        )
                     )
 
                     if index < store.items.count - 1 {
@@ -90,59 +101,89 @@ struct EditorView: View {
 
 private struct EditorItemRow: View {
     let item: LaunchItem
-    let canMoveUp: Bool
-    let canMoveDown: Bool
-    let onMoveUp: () -> Void
-    let onMoveDown: () -> Void
+    let isDragging: Bool
     let onEdit: () -> Void
     let onRemove: () -> Void
+    let onDrag: () -> NSItemProvider
 
     private let iconSize: CGFloat = 32
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(nsImage: item.displayIcon(size: iconSize))
+        ZStack {
+            // macOS `.onDrag` only starts from Image views — fill the row with one.
+            Image(nsImage: Self.dragSurface)
                 .resizable()
-                .interpolation(.high)
-                .frame(width: iconSize, height: iconSize)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .interpolation(.none)
+                .opacity(0.001)
+                .onDrag(onDrag)
 
-            Text(item.name)
-                .font(.body)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 12) {
+                Image(nsImage: item.displayIcon(size: iconSize))
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(width: iconSize, height: iconSize)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .allowsHitTesting(false)
 
-            ControlGroup {
-                Button(action: onMoveUp) {
-                    Image(systemName: "chevron.up")
+                Text(item.name)
+                    .font(.body)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .allowsHitTesting(false)
+
+                Menu {
+                    Button("Edit", action: onEdit)
+                    Button("Delete", role: .destructive, action: onRemove)
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 22, height: 22)
+                        .background(.quaternary, in: Circle())
                 }
-                .disabled(!canMoveUp)
-                .help("Move Up")
-
-                Button(action: onMoveDown) {
-                    Image(systemName: "chevron.down")
-                }
-                .disabled(!canMoveDown)
-                .help("Move Down")
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .help("More")
             }
-            .controlSize(.small)
-
-            Menu {
-                Button("Edit", action: onEdit)
-                Button("Delete", role: .destructive, action: onRemove)
-            } label: {
-                Image(systemName: "ellipsis")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 22, height: 22)
-                    .background(.quaternary, in: Circle())
-            }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .help("More")
+            .padding(.horizontal, 12)
+            .padding(.vertical, 9)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 9)
+        .frame(maxWidth: .infinity)
+        .help("Drag to Reorder")
+        .opacity(isDragging ? 0.45 : 1)
+        .animation(.snappy(duration: 0.18), value: isDragging)
+    }
+
+    private static let dragSurface: NSImage = {
+        let image = NSImage(size: NSSize(width: 1, height: 1))
+        image.lockFocus()
+        NSColor.white.setFill()
+        NSRect(x: 0, y: 0, width: 1, height: 1).fill()
+        image.unlockFocus()
+        image.isTemplate = true
+        return image
+    }()
+}
+
+private struct AccountReorderDropDelegate: DropDelegate {
+    let itemID: LaunchItem.ID
+    let store: LaunchItemStore
+    @Binding var draggingID: LaunchItem.ID?
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingID = nil
+        return true
+    }
+
+    func dropEntered(info: DropInfo) {
+        guard let draggingID, draggingID != itemID else { return }
+        withAnimation(.snappy(duration: 0.18)) {
+            store.move(id: draggingID, onto: itemID)
+        }
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
     }
 }
 

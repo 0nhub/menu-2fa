@@ -33,15 +33,13 @@ final class LaunchItemStore {
         persist()
     }
 
-    func moveUp(_ item: LaunchItem) {
-        guard let index = items.firstIndex(where: { $0.id == item.id }), index > 0 else { return }
-        items.swapAt(index, index - 1)
-        persist()
-    }
-
-    func moveDown(_ item: LaunchItem) {
-        guard let index = items.firstIndex(where: { $0.id == item.id }), index < items.count - 1 else { return }
-        items.swapAt(index, index + 1)
+    func move(id: LaunchItem.ID, onto targetID: LaunchItem.ID) {
+        guard id != targetID,
+              let from = items.firstIndex(where: { $0.id == id }),
+              let to = items.firstIndex(where: { $0.id == targetID })
+        else { return }
+        let item = items.remove(at: from)
+        items.insert(item, at: to)
         persist()
     }
 

@@ -15,7 +15,7 @@ Menu 2FA ist eine **Accessory-App** (kein Dock-Fenster beim Start). Sie lebt in 
 | Linksklick (Konten vorhanden) | Liste der Accounts → Klick kopiert den aktuellen 6-stelligen TOTP-Code |
 | Linksklick (keine Konten) / Rechtsklick | Kontextmenü: Settings, App Lock, Launch at Login, Quit |
 | Menü offen | Schloss-Icon wird zum **Zeitradius** (30-Sekunden-TOTP) |
-| Settings | Liste der Accounts, `+` hinzufügen, `…` bearbeiten/löschen |
+| Settings | Liste der Accounts, Reihenfolge per Drag-and-Drop der Zeile, `+` hinzufügen, `…` bearbeiten/löschen |
 
 Technisch: SwiftUI für Settings/Dialoge, AppKit für Status Item und Menüs. Secrets bleiben auf dem Mac (`UserDefaults`, Key `authItems`) — kein Cloud-Sync.
 

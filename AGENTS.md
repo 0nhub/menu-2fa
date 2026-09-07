@@ -24,7 +24,7 @@ Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll
 
 ### Settings
 
-- Liste mit Pfeilen (Reorder), `+`, `…` (Edit/Delete).
+- Liste per Drag-and-Drop der ganzen Zeile umsortieren, `+`, `…` (Edit/Delete).
 - Sheet: Bild (Choose/Remove + Drop), optional Emoji, optional URL (Favicon), Titel, Token.
 - Token-Feld: **kein Placeholder**, kein Beispielsecret.
 - Token: Base32 oder `otpauth://`.

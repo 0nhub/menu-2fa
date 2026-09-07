@@ -55,6 +55,7 @@
 				C0AF7ACA3042F1B0001565E7 /* Sources */,
 				C0AF7ACB3042F1B0001565E7 /* Frameworks */,
 				C0AF7ACC3042F1B0001565E7 /* Resources */,
+				A1B2C3D43042F1B0001565E7 /* Strip Quarantine Xattrs */,
 			);
 			buildRules = (
 			);
@@ -134,6 +135,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A1B2C3D43042F1B0001565E7 /* Strip Quarantine Xattrs */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Strip Quarantine Xattrs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# ITMS-91109: App Store rejects com.apple.quarantine on packaged files\nif [ -d \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" ]; then\n  /usr/bin/xattr -cr \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" || true\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C0AF7ACA3042F1B0001565E7 /* Sources */ = {
@@ -274,7 +297,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Menu 2FA/Menu_2FA.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = AUP84ZCD2B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -310,7 +333,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Menu 2FA/Menu_2FA.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = AUP84ZCD2B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
