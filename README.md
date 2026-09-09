@@ -44,6 +44,7 @@ Menu 2FA/                          ← Git-Root / Arbeitsordner
     ├── EditorView.swift           ← Settings-Hauptliste
     ├── EditorWindowController.swift
     ├── ItemEditorView.swift       ← Add/Edit-Sheet
+    ├── QRCodeImport.swift         ← QR aus Kamera, Bild und Bildschirmausschnitt
     ├── AppLock.swift              ← Touch ID / Passwort-Gate
     ├── LaunchAtLogin.swift
     ├── IconURLFetcher.swift       ← Favicon von URL laden
@@ -112,9 +113,13 @@ Icon-Priorität eines Accounts: **eigenes Bild → Emoji → Favicon von URL →
 | --- | --- |
 | `EditorWindowController` | Fenster zeigen/aktivieren |
 | `EditorView` | Liste, leerer Zustand, Toolbar (`+`, Quit) |
-| `ItemEditorView` | Sheet: Icon/Emoji/URL, Titel, Token (ohne Placeholder) |
+| `ItemEditorView` | Sheet: Icon/Emoji/URL, Titel, Token (ohne Placeholder), QR-Menü |
+| `QRCodeImport` | Lokale QR-Erkennung via Vision, Kamera und Bildschirmaufnahme |
 
-Token darf Base32 oder `otpauth://` sein (`TOTP.fields(from:)`).
+Token darf Base32 oder `otpauth://` sein (`TOTP.fields(from:)`). Das QR-Symbol neben
+dem Token-Feld importiert denselben Wert aus der Kamera, einer Bilddatei oder einem
+direkt mit dem Fadenkreuz markierten Bildschirmbereich. Beim Loslassen wird der QR-Code
+automatisch übernommen. QR-Inhalte werden lokal ausgewertet.
 
 ### Schicht: Crypto
 
@@ -130,7 +135,11 @@ Token darf Base32 oder `otpauth://` sein (`TOTP.fields(from:)`).
 | Development Team | `AUP84ZCD2B` |
 | Deployment | macOS 15.0+ |
 | App Store Connect | App ID `6806774047` |
-| Entitlements | App Sandbox, network client, user-selected files (read-only) |
+| Entitlements | App Sandbox, Kamera, network client, user-selected files (read-only) |
+
+Versionierung: öffentliche Releases verwenden ausschließlich `1.1`, `1.2`, `1.3` usw.
+Keine Patch-Versionen wie `1.1.1`. Die interne Build-Nummer wird weiterhin bei jedem
+Upload erhöht.
 
 Lokal bauen:
 

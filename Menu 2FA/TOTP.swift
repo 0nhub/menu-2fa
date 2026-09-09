@@ -40,6 +40,25 @@ enum TOTP {
         return true
     }
 
+    static func isSupportedQRCodePayload(_ raw: String) -> Bool {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.lowercased().hasPrefix("otpauth://") {
+            guard let components = URLComponents(string: trimmed),
+                  components.host?.lowercased() == "totp"
+            else { return false }
+            return isValidSecret(trimmed)
+        }
+
+        let ignored = CharacterSet.whitespacesAndNewlines
+            .union(CharacterSet(charactersIn: "-="))
+        let compact = trimmed.uppercased().unicodeScalars.filter { !ignored.contains($0) }
+        let allowed = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")
+        guard !compact.isEmpty,
+              compact.allSatisfy({ allowed.contains($0) })
+        else { return false }
+        return isValidSecret(String(String.UnicodeScalarView(compact)))
+    }
+
     static func remaining(at date: Date = .now, period: TimeInterval = period) -> TimeInterval {
         let elapsed = date.timeIntervalSince1970.truncatingRemainder(dividingBy: period)
         return period - elapsed

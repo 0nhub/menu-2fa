@@ -28,6 +28,8 @@ Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll
 - Sheet: Bild (Choose/Remove + Drop), optional Emoji, optional URL (Favicon), Titel, Token.
 - Token-Feld: **kein Placeholder**, kein Beispielsecret.
 - Token: Base32 oder `otpauth://`.
+- QR-Import neben Token: Kamera, Bilddatei oder direktes Fadenkreuz über dem Bildschirm;
+  Bereich beim Loslassen automatisch erkennen und übernehmen, kein Zwischenfenster.
 
 ### Persistenz
 
@@ -51,6 +53,7 @@ Custom image → Emoji → URL-Favicon → Lock-Placeholder.
 | `EditorView.swift` | Settings-Liste |
 | `EditorWindowController.swift` | Fenster |
 | `ItemEditorView.swift` | Add/Edit |
+| `QRCodeImport.swift` | QR-Erkennung / Kamera / Bilddatei / Bildschirmausschnitt |
 | `AppLock.swift` | LAContext-Gate |
 | `LaunchAtLogin.swift` | Login Item |
 | `IconURLFetcher.swift` | Netzwerk nur für Favicons |
@@ -66,6 +69,8 @@ Xcode: Ordner `Menu 2FA/` ist **PBXFileSystemSynchronizedRootGroup** — neue Sw
 - Deployment: macOS 15.0+
 - ASC App: `6806774047`
 - GitHub (privat): `https://github.com/0nhub/menu-2fa`
+- Releases nur als `1.1`, `1.2`, `1.3` usw.; nie Patch-Versionen wie `1.1.1`.
+- `CURRENT_PROJECT_VERSION` bei jedem Upload erhöhen.
 
 ## Website (separates Repo `sgroi.ga`)
 
@@ -84,6 +89,7 @@ Frühere Ablehnung: Guideline **2.1 Information Needed** (Screen Recording + Rev
 
 - [ ] Lock-Icon in der Menüleiste
 - [ ] Account mit Base32 und mit `otpauth://` anlegen
+- [ ] QR-Import über Kamera, Bilddatei und Bildschirmbereich
 - [ ] Linksklick kopiert Code + Checkmark
 - [ ] Countdown-Ring bei offenem Codes-Menü
 - [ ] Rechtsklick: Settings / Lock / Login / Quit

@@ -5,12 +5,14 @@
 
 import AppKit
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct EditorView: View {
     @Environment(LaunchItemStore.self) private var store
     @State private var session: ItemEditorSession?
-    @State private var draggingID: LaunchItem.ID?
+    @State private var draggingID: UUID?
+    @State private var pointerY: CGFloat = 0
+    @State private var grabOffsetY: CGFloat = 0
+    @State private var rowFrames: [UUID: CGRect] = [:]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -67,69 +69,122 @@ struct EditorView: View {
 
     private var itemList: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
+            VStack(spacing: 0) {
                 ForEach(Array(store.items.enumerated()), id: \.element.id) { index, item in
                     EditorItemRow(
                         item: item,
-                        isDragging: draggingID == item.id,
+                        showsDivider: index < store.items.count - 1,
                         onEdit: { session = .edit(item) },
                         onRemove: { store.remove(item) },
-                        onDrag: {
-                            draggingID = item.id
-                            return NSItemProvider(object: item.id.uuidString as NSString)
+                        onReorder: { beginOrUpdateDrag(item: item, value: $0) },
+                        onReorderEnd: endDrag
+                    )
+                    .opacity(draggingID == item.id ? 0 : 1)
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear.preference(
+                                key: RowFrameKey.self,
+                                value: [item.id: geo.frame(in: .named("settingsList"))]
+                            )
                         }
-                    )
-                    .onDrop(
-                        of: [.text],
-                        delegate: AccountReorderDropDelegate(
-                            itemID: item.id,
-                            store: store,
-                            draggingID: $draggingID
-                        )
-                    )
-
-                    if index < store.items.count - 1 {
-                        Divider()
-                            .padding(.leading, 56)
                     }
                 }
             }
             .padding(.vertical, 4)
+            .coordinateSpace(name: "settingsList")
+            .onPreferenceChange(RowFrameKey.self) { rowFrames = $0 }
+            .overlay(alignment: .topLeading) {
+                dragPreview
+            }
         }
+    }
+
+    @ViewBuilder
+    private var dragPreview: some View {
+        if let draggingID,
+           let item = store.items.first(where: { $0.id == draggingID }) {
+            EditorItemRow(
+                item: item,
+                showsDivider: false,
+                onEdit: {},
+                onRemove: {},
+                isPreview: true
+            )
+            .background(.windowBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .shadow(color: .black.opacity(0.18), radius: 8, y: 2)
+            .offset(y: pointerY - grabOffsetY)
+            .allowsHitTesting(false)
+        }
+    }
+
+    private func beginOrUpdateDrag(item: LaunchItem, value: DragGesture.Value) {
+        if draggingID != item.id {
+            draggingID = item.id
+            if let frame = rowFrames[item.id] {
+                grabOffsetY = value.location.y - frame.minY
+            } else {
+                grabOffsetY = 0
+            }
+        }
+        pointerY = value.location.y
+        moveIfNeeded(dragging: item.id, pointerY: value.location.y)
+    }
+
+    private func endDrag() {
+        draggingID = nil
+        grabOffsetY = 0
+        pointerY = 0
+    }
+
+    private func moveIfNeeded(dragging: UUID, pointerY: CGFloat) {
+        guard store.items.contains(where: { $0.id == dragging }) else { return }
+
+        guard let onto = store.items.first(where: { candidate in
+            guard candidate.id != dragging, let frame = rowFrames[candidate.id] else { return false }
+            return pointerY >= frame.minY && pointerY < frame.maxY
+        }) else { return }
+
+        store.move(id: dragging, onto: onto.id)
+    }
+}
+
+private struct RowFrameKey: PreferenceKey {
+    static var defaultValue: [UUID: CGRect] = [:]
+
+    static func reduce(value: inout [UUID: CGRect], nextValue: () -> [UUID: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
     }
 }
 
 private struct EditorItemRow: View {
     let item: LaunchItem
-    let isDragging: Bool
+    let showsDivider: Bool
     let onEdit: () -> Void
     let onRemove: () -> Void
-    let onDrag: () -> NSItemProvider
+    var onReorder: ((DragGesture.Value) -> Void)?
+    var onReorderEnd: (() -> Void)?
+    var isPreview = false
 
     private let iconSize: CGFloat = 32
 
     var body: some View {
-        ZStack {
-            // macOS `.onDrag` only starts from Image views — fill the row with one.
-            Image(nsImage: Self.dragSurface)
-                .resizable()
-                .interpolation(.none)
-                .opacity(0.001)
-                .onDrag(onDrag)
-
+        VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Image(nsImage: item.displayIcon(size: iconSize))
-                    .resizable()
-                    .interpolation(.high)
-                    .frame(width: iconSize, height: iconSize)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .allowsHitTesting(false)
+                HStack(spacing: 12) {
+                    Image(nsImage: item.displayIcon(size: iconSize))
+                        .resizable()
+                        .interpolation(.high)
+                        .frame(width: iconSize, height: iconSize)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
-                Text(item.name)
-                    .font(.body)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .allowsHitTesting(false)
+                    Text(item.name)
+                        .font(.body)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .contentShape(Rectangle())
+                .gesture(isPreview ? nil : reorderGesture)
 
                 Menu {
                     Button("Edit", action: onEdit)
@@ -143,47 +198,28 @@ private struct EditorItemRow: View {
                 }
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
+                .disabled(isPreview)
                 .help("More")
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 9)
-        }
-        .frame(maxWidth: .infinity)
-        .help("Drag to Reorder")
-        .opacity(isDragging ? 0.45 : 1)
-        .animation(.snappy(duration: 0.18), value: isDragging)
-    }
+            .contentShape(Rectangle())
 
-    private static let dragSurface: NSImage = {
-        let image = NSImage(size: NSSize(width: 1, height: 1))
-        image.lockFocus()
-        NSColor.white.setFill()
-        NSRect(x: 0, y: 0, width: 1, height: 1).fill()
-        image.unlockFocus()
-        image.isTemplate = true
-        return image
-    }()
-}
-
-private struct AccountReorderDropDelegate: DropDelegate {
-    let itemID: LaunchItem.ID
-    let store: LaunchItemStore
-    @Binding var draggingID: LaunchItem.ID?
-
-    func performDrop(info: DropInfo) -> Bool {
-        draggingID = nil
-        return true
-    }
-
-    func dropEntered(info: DropInfo) {
-        guard let draggingID, draggingID != itemID else { return }
-        withAnimation(.snappy(duration: 0.18)) {
-            store.move(id: draggingID, onto: itemID)
+            if showsDivider {
+                Divider()
+                    .padding(.leading, 56)
+            }
         }
     }
 
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        DropProposal(operation: .move)
+    private var reorderGesture: some Gesture {
+        DragGesture(minimumDistance: 3, coordinateSpace: .named("settingsList"))
+            .onChanged { value in
+                onReorder?(value)
+            }
+            .onEnded { _ in
+                onReorderEnd?()
+            }
     }
 }
 

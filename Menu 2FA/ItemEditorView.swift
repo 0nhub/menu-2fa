@@ -36,6 +36,9 @@ struct ItemEditorView: View {
     @State private var iconFetchFailed = false
     @State private var iconFetchTask: Task<Void, Never>?
     @State private var iconFetchGeneration = 0
+    @State private var isCameraScannerPresented = false
+    @State private var isCapturingScreen = false
+    @State private var qrImportError: String?
 
     init(session: ItemEditorSession, onSave: @escaping (LaunchItem) -> Void) {
         self.session = session
@@ -134,9 +137,44 @@ struct ItemEditorView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("Token")
-                TextField("", text: $secret)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.body.monospaced())
+                HStack(spacing: 8) {
+                    TextField("", text: $secret)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.body.monospaced())
+
+                    Menu {
+                        Button {
+                            isCameraScannerPresented = true
+                        } label: {
+                            Label("Camera", systemImage: "camera")
+                        }
+
+                        Button {
+                            importQRCodeImage()
+                        } label: {
+                            Label("Choose Image", systemImage: "photo")
+                        }
+
+                        Button {
+                            captureScreenForQRCode()
+                        } label: {
+                            Label("Select Screen Area", systemImage: "viewfinder")
+                        }
+                    } label: {
+                        if isCapturingScreen {
+                            ProgressView()
+                                .controlSize(.small)
+                                .frame(width: 18, height: 18)
+                        } else {
+                            Image(systemName: "qrcode.viewfinder")
+                                .frame(width: 18, height: 18)
+                        }
+                    }
+                    .menuStyle(.borderlessButton)
+                    .fixedSize()
+                    .help("Scan QR Code")
+                    .disabled(isCapturingScreen)
+                }
             }
 
             HStack {
@@ -161,6 +199,20 @@ struct ItemEditorView: View {
         }
         .onDisappear {
             iconFetchTask?.cancel()
+        }
+        .sheet(isPresented: $isCameraScannerPresented) {
+            QRCameraScannerView(onValue: applyQRCodeValue)
+        }
+        .alert(
+            "Couldn’t Import QR Code",
+            isPresented: Binding(
+                get: { qrImportError != nil },
+                set: { if !$0 { qrImportError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(qrImportError ?? "")
         }
     }
 
@@ -198,6 +250,43 @@ struct ItemEditorView: View {
         if let title = TOTP.fields(from: raw).title {
             name = title
         }
+    }
+
+    private func importQRCodeImage() {
+        guard let value = QRCodeImporter.chooseImage() else {
+            qrImportError = String(localized: "No QR code was found in that image.")
+            return
+        }
+        applyQRCodeValue(value)
+    }
+
+    private func captureScreenForQRCode() {
+        isCapturingScreen = true
+        QRScreenRegionPicker.begin { result in
+            isCapturingScreen = false
+            switch result {
+            case .success(let value):
+                applyQRCodeValue(value)
+            case .failure(let error):
+                qrImportError = error.localizedDescription
+            case nil:
+                break
+            }
+        }
+    }
+
+    private func applyQRCodeValue(_ rawValue: String) {
+        let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard TOTP.isSupportedQRCodePayload(value) else {
+            qrImportError = String(localized: "The QR code does not contain a supported TOTP token.")
+            return
+        }
+        let parsed = TOTP.fields(from: value)
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+           let title = parsed.title {
+            name = title
+        }
+        secret = parsed.secret
     }
 
     private func scheduleIconFetch(from raw: String) {
