@@ -28,6 +28,8 @@ enum ContextMenuRow: CaseIterable {
     case settings
     case requireAuthentication
     case launchAtLogin
+    case support
+    case moreApps
     case quit
 
     var title: String {
@@ -35,6 +37,8 @@ enum ContextMenuRow: CaseIterable {
         case .settings: return String(localized: "Settings")
         case .requireAuthentication: return String(localized: "Require Authentication")
         case .launchAtLogin: return String(localized: "Launch at Login")
+        case .support: return String(localized: "Support")
+        case .moreApps: return String(localized: "More Apps")
         case .quit: return String(localized: "Quit")
         }
     }
@@ -44,8 +48,16 @@ enum ContextMenuRow: CaseIterable {
         case .settings: return "⌘,"
         case .requireAuthentication: return AppLock.isEnabled ? "✓" : ""
         case .launchAtLogin: return LaunchAtLogin.isEnabled ? "✓" : ""
+        case .support, .moreApps: return ""
         case .quit: return "⌘Q"
         }
+    }
+
+    static let supportURL = URL(string: "https://sgroi.ga/Support/menu-2fa/")!
+    static let moreAppsURL = URL(string: "https://apps.apple.com/developer/gabriel-sgroi/id6799928916")!
+
+    static func open(_ url: URL) {
+        NSWorkspace.shared.open(url)
     }
 
     func menuItem() -> NSMenuItem {
@@ -115,6 +127,12 @@ private final class ContextMenuRowView: NSView {
         case .launchAtLogin:
             LaunchAtLogin.toggle()
             needsDisplay = true
+        case .support:
+            enclosingMenuItem?.menu?.cancelTracking()
+            ContextMenuRow.open(ContextMenuRow.supportURL)
+        case .moreApps:
+            enclosingMenuItem?.menu?.cancelTracking()
+            ContextMenuRow.open(ContextMenuRow.moreAppsURL)
         case .quit:
             enclosingMenuItem?.menu?.cancelTracking()
             NSApp.terminate(nil)

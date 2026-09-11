@@ -148,6 +148,8 @@ final class StatusItemController: NSObject {
         menu.addItem(ContextMenuRow.settings.menuItem())
         menu.addItem(ContextMenuRow.requireAuthentication.menuItem())
         menu.addItem(ContextMenuRow.launchAtLogin.menuItem())
+        menu.addItem(ContextMenuRow.support.menuItem())
+        menu.addItem(ContextMenuRow.moreApps.menuItem())
         menu.addItem(ContextMenuRow.quit.menuItem())
         return menu
     }

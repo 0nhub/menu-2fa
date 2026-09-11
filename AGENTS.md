@@ -19,7 +19,7 @@ Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll
 - Linksklick + Konten → Codes-Menü; Auswahl **kopiert** 6-stelligen TOTP.
 - Erfolgreiches Copy → kurz Checkmark-Feedback.
 - App Lock an → vor Codes-Menü `LocalAuthentication` (`deviceOwnerAuthentication`).
-- Rechtsklick / Control-Klick / leere Liste → Kontext: Settings, Require Authentication, Launch at Login, Quit.
+- Rechtsklick / Control-Klick / leere Liste → Kontext: Settings, Require Authentication, Launch at Login, Support, More Apps, Quit.
 - Codes-Menü offen → Countdown-Ring ab 12 Uhr, **im Uhrzeigersinn**, Lücke = Restzeit (30 s).
 
 ### Settings
