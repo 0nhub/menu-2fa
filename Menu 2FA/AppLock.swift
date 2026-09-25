@@ -10,8 +10,12 @@ enum AppLock {
     private static let storageKey = "requireAuthentication"
 
     static var isEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: storageKey) }
-        set { UserDefaults.standard.set(newValue, forKey: storageKey) }
+        get { AppGroup.bool(forKey: storageKey) }
+        set { AppGroup.set(newValue, forKey: storageKey) }
+    }
+
+    static func mirrorToAppGroup() {
+        AppGroup.set(isEnabled, forKey: storageKey)
     }
 
     /// Touch ID when available, otherwise the Mac login password.

@@ -15,7 +15,7 @@ struct EditorView: View {
     @State private var rowFrames: [UUID: CGRect] = [:]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
             Group {
                 if store.items.isEmpty {
                     emptyState
@@ -24,28 +24,14 @@ struct EditorView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.quaternary.opacity(0.28), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-        }
-        .padding(16)
-        .frame(minWidth: 380, minHeight: 280)
-        .background(.windowBackground)
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    NSApp.terminate(nil)
-                } label: {
-                    Image(systemName: "power")
-                }
-                .help("Quit")
-
-                Button {
-                    session = .add
-                } label: {
-                    Image(systemName: "plus")
-                }
-                .help("Add Item")
+            .background {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(.quaternary.opacity(0.28))
             }
         }
+        .padding(16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.windowBackground)
         .sheet(item: $session) { session in
             ItemEditorView(session: session) { item in
                 switch session {
@@ -60,11 +46,16 @@ struct EditorView: View {
     }
 
     private var emptyState: some View {
+        addButton
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var addButton: some View {
         Button("Add Item") {
             session = .add
         }
         .buttonStyle(.borderedProminent)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
     }
 
     private var itemList: some View {
@@ -89,6 +80,10 @@ struct EditorView: View {
                         }
                     }
                 }
+
+                addButton
+                    .padding(.top, 20)
+                    .padding(.bottom, 16)
             }
             .padding(.vertical, 4)
             .coordinateSpace(name: "settingsList")

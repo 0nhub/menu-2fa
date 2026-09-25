@@ -8,7 +8,7 @@ Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll
 1. Nur in `/Users/gabriel/Menu 2FA` arbeiten. **Nie** Menu Launcher überschreiben.
 2. Keine echten TOTP-Secrets, Recovery-Codes oder `.env` committen.
 3. Keine Screenshots/Videos erfinden — Medien liefert der Mensch.
-4. Marketing/Privacy: Speicherung ist **UserDefaults (`authItems`)**, nicht Keychain (solange der Code das nicht ändert).
+4. Marketing/Privacy: Standard **UserDefaults / App Group (`authItems`)**; mit Pro+iCloud auch Ubiquitous KV — in Privacy/Website ehrlich halten. Widgets lesen dieselben lokalen Tokens.
 5. Nach Strukturänderungen: `README.md` und diese Datei aktualisieren.
 
 ## Was die App tun muss (Nicht-Regression)
@@ -19,12 +19,13 @@ Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll
 - Linksklick + Konten → Codes-Menü; Auswahl **kopiert** 6-stelligen TOTP.
 - Erfolgreiches Copy → kurz Checkmark-Feedback.
 - App Lock an → vor Codes-Menü `LocalAuthentication` (`deviceOwnerAuthentication`).
-- Rechtsklick / Control-Klick / leere Liste → Kontext: Settings, Require Authentication, Launch at Login, Support, More Apps, Quit.
+- Rechtsklick / Control-Klick / leere Liste → Kontext: Settings, Require Authentication, Launch at Login — Trennlinie — Support, More Apps — Trennlinie — Quit.
 - Codes-Menü offen → Countdown-Ring ab 12 Uhr, **im Uhrzeigersinn**, Lücke = Restzeit (30 s).
 
 ### Settings
 
-- Liste per Drag-and-Drop der ganzen Zeile umsortieren, `+`, `…` (Edit/Delete).
+- Toolbar-Tabs: **2FA** (Konten), **General** (Login, App Lock, iCloud Sync), **Upgrade** (Pro kaufen/wiederherstellen — Tab entfällt mit Pro).
+- Tab 2FA: Liste per Drag-and-Drop der ganzen Zeile umsortieren, `+`, `…` (Edit/Delete).
 - Sheet: Bild (Choose/Remove + Drop), optional Emoji, optional URL (Favicon), Titel, Token.
 - Token-Feld: **kein Placeholder**, kein Beispielsecret.
 - Token: Base32 oder `otpauth://`.
@@ -33,9 +34,10 @@ Diese Datei ergänzt **operative Regeln**, die man nicht aus dem Code raten soll
 
 ### Persistenz
 
-- Konten: `UserDefaults` → `authItems` (JSON `[LaunchItem]`).
-- App Lock: `requireAuthentication`.
-- Kein Cloud-Sync für Secrets.
+- Konten: App Group `AUP84ZCD2B.ga.sgroi.menu-2fa` + `UserDefaults` → `authItems` (JSON `[LaunchItem]`).
+- App Lock: `requireAuthentication` (ebenfalls App Group, damit das Widget es sieht).
+- **2FA Pro** (`ga.sgroi.menu2fa.pro`, 2,99 €): Kauf im Einstellungsfenster (`purchase(confirmIn:)`). Debug-Builds kaufen über `Configuration.storekit` (lokaler Xcode-Testkauf, keine Apple-Account-Anmeldung). Optionaler Sync (`syncsWithiCloud`) schreibt `NSUbiquitousKeyValueStore` inkl. Tokens nur bei Pro, angeschaltetem Sync und vorhandenem iCloud-Konto. Ohne Pro kein Sync. Widget-Kopieren nur mit Pro (`proUnlocked` in der App Group).
+- Widget: mehrere Instanzen; Konto nur im Widget-Edit-Modus wählen. Die ganze Kachel ist der Knopf. Mit Pro kopiert die Menüleisten-App den Code **einmal** (die Extension schreibt die Zwischenablage nicht) und zeigt **Copied**. Ohne Pro zeigt die Kachel **Pro** und kopiert nicht. Settings bleiben zu. Nichts davon in Settings.
 
 ### Icon-Priorität
 
@@ -47,11 +49,20 @@ Custom image → Emoji → URL-Favicon → Lock-Placeholder.
 | --- | --- |
 | `Menu_2FAApp.swift` | Entry, Accessory, Status Item installieren |
 | `StatusItemController.swift` | Menüleiste / Menüs / Ring / Copy-Feedback / Lock-Gate |
-| `TOTP.swift` | Crypto + Restzeit |
+| `Shared/TOTP.swift` | Crypto + Restzeit (App + Widget) |
+| `Shared/AppGroup.swift` / `SharedAccountStore.swift` | App-Group-Defaults, Widget-Konto-Snapshot |
+| `Menu 2FA Widget/` | WidgetKit-UI: ein Widget = ein Konto, Klick kopiert Code |
+| `Menu 2FA Intents/` | Intents-Extension: Account-Liste für **Edit 2FA…** |
+| `Shared/SelectAccount.intentdefinition` | Widget-Edit „Edit 2FA…“ + Dreh-Sheet (Account wie Location beim Wetter) |
+| `Shared/CopyTOTPIntent.swift` | Klick kopiert den Code |
 | `LaunchItem.swift` | Modell + Icon zeichnen |
 | `LaunchItemStore.swift` | CRUD + Pasteboard |
-| `EditorView.swift` | Settings-Liste |
-| `EditorWindowController.swift` | Fenster |
+| `SettingsView.swift` | Toolbar-Tabs 2FA / General / Upgrade |
+| `GeneralSettings.swift` | Launch at Login, App Lock, iCloud Sync |
+| `ProStore.swift` | IAP 2FA Pro (StoreKit 2) |
+| `iCloudListSync.swift` / `AuthItemCloudSchema.swift` | iCloud KV Sync |
+| `EditorView.swift` | Tab „2FA“ — Kontenliste |
+| `EditorWindowController.swift` | Settings-Fenster + Toolbar |
 | `ItemEditorView.swift` | Add/Edit |
 | `QRCodeImport.swift` | QR-Erkennung / Kamera / Bilddatei / Bildschirmausschnitt |
 | `AppLock.swift` | LAContext-Gate |
@@ -60,7 +71,7 @@ Custom image → Emoji → URL-Favicon → Lock-Placeholder.
 | `Localizable.xcstrings` | Strings |
 | `launch.sh` | Debug-App neu öffnen |
 
-Xcode: Ordner `Menu 2FA/` ist **PBXFileSystemSynchronizedRootGroup** — neue Swift-Dateien dort werden auto-inkludiert.
+Xcode: Ordner `Menu 2FA/` ist **PBXFileSystemSynchronizedRootGroup** — neue Swift-Dateien dort werden auto-inkludiert. `Shared/` wird in App, Widget und Intents-Extension kompiliert; Widget-Dateien nur in `Menu 2FA Widget/`. `Menu 2FA Intents/` liefert die Account-Liste für **Edit 2FA…**.
 
 ## IDs
 
@@ -92,7 +103,9 @@ Frühere Ablehnung: Guideline **2.1 Information Needed** (Screen Recording + Rev
 - [ ] QR-Import über Kamera, Bilddatei und Bildschirmbereich
 - [ ] Linksklick kopiert Code + Checkmark
 - [ ] Countdown-Ring bei offenem Codes-Menü
-- [ ] Rechtsklick: Settings / Lock / Login / Quit
+- [ ] Rechtsklick: Settings / Lock / Login / Support / More Apps / Quit (mit Trennlinien)
+- [ ] Settings-Tabs 2FA / General / Upgrade; iCloud nur mit Pro
 - [ ] App Lock blockiert Codes bis Auth OK
 - [ ] Edit/Delete/Reorder überlebt Neustart
 - [ ] Icon-Priorität stimmt
+- [ ] Mehrere Widgets anlegen, im Edit-Modus je ein Konto wählen, Logo+Name sichtbar, Klick kopiert Code

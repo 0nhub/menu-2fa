@@ -1,0 +1,39 @@
+{
+  "identifier" : "Menu2FAStore",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "B2C3D4E5F60718293A4B5C6D",
+      "localizations" : [
+        {
+          "description" : "Extended Pro features.",
+          "displayName" : "2FA Pro",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Erweiterte Pro-Funktionen.",
+          "displayName" : "2FA Pro",
+          "locale" : "de"
+        }
+      ],
+      "productID" : "ga.sgroi.menu2fa.pro",
+      "referenceName" : "2FA Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_failTransactionsEnabled" : false,
+    "_storeKitError" : 0,
+    "_storefront" : "DEU",
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

@@ -6,20 +6,136 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C0EM7FIL3042F1B0001565E7 /* Menu 2FA Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C0WD7ACE3042F1B0001565E7 /* Menu 2FA Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C0IN7FIL3042F1B0001565E7 /* Menu 2FA Intents.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C0IN7ACE3042F1B0001565E7 /* Menu 2FA Intents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C0WD7ACP3042F1B0001565E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0AF7AC63042F1B0001565E7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0WD7ACD3042F1B0001565E7;
+			remoteInfo = "Menu 2FA Widget";
+		};
+		C0IN7ACP3042F1B0001565E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0AF7AC63042F1B0001565E7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0IN7ACD3042F1B0001565E7;
+			remoteInfo = "Menu 2FA Intents";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C0EM7ACC3042F1B0001565E7 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C0EM7FIL3042F1B0001565E7 /* Menu 2FA Widget.appex in Embed Foundation Extensions */,
+				C0IN7FIL3042F1B0001565E7 /* Menu 2FA Intents.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		C0AF7ACE3042F1B0001565E7 /* Menu 2FA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Menu 2FA.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0AF7ACE3042F1B0001565E7 /* 2FA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "2FA.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0WD7ACE3042F1B0001565E7 /* Menu 2FA Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Menu 2FA Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0IN7ACE3042F1B0001565E7 /* Menu 2FA Intents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Menu 2FA Intents.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C0WD7EXC3042F1B0001565E7 /* Exceptions for "Menu 2FA Widget" folder in "Menu 2FA Widget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C0WD7ACD3042F1B0001565E7 /* Menu 2FA Widget */;
+		};
+		C0IN7EXC3042F1B0001565E7 /* Exceptions for "Menu 2FA Intents" folder in "Menu 2FA Intents" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				Menu_2FA_Intents.entitlements,
+			);
+			target = C0IN7ACD3042F1B0001565E7 /* Menu 2FA Intents */;
+		};
+		C0SH7EXC3042F1B0001565E7 /* Exceptions for "Shared" folder in "Menu 2FA Intents" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AuthAccountEntity.swift,
+				Clipboard.swift,
+				CopyTOTPIntent.swift,
+				WidgetCopyBridge.swift,
+				WidgetShareProbe.swift,
+			);
+			target = C0IN7ACD3042F1B0001565E7 /* Menu 2FA Intents */;
+		};
+		C0AF7EXC3042F1B0001565E7 /* Exceptions for "Menu 2FA" folder in "Menu 2FA" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SupportingInfo.plist,
+			);
+			target = C0AF7ACD3042F1B0001565E7 /* Menu 2FA */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C0AF7AD03042F1B0001565E7 /* Menu 2FA */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C0AF7EXC3042F1B0001565E7 /* Exceptions for "Menu 2FA" folder in "Menu 2FA" target */,
+			);
 			path = "Menu 2FA";
+			sourceTree = "<group>";
+		};
+		C0SH7AD03042F1B0001565E7 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C0SH7EXC3042F1B0001565E7 /* Exceptions for "Shared" folder in "Menu 2FA Intents" target */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		C0IN7AD03042F1B0001565E7 /* Menu 2FA Intents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C0IN7EXC3042F1B0001565E7 /* Exceptions for "Menu 2FA Intents" folder in "Menu 2FA Intents" target */,
+			);
+			path = "Menu 2FA Intents";
+			sourceTree = "<group>";
+		};
+		C0WD7AD03042F1B0001565E7 /* Menu 2FA Widget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C0WD7EXC3042F1B0001565E7 /* Exceptions for "Menu 2FA Widget" folder in "Menu 2FA Widget" target */,
+			);
+			path = "Menu 2FA Widget";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		C0AF7ACB3042F1B0001565E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0WD7ACB3042F1B0001565E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0IN7ACB3042F1B0001565E7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +149,9 @@
 			isa = PBXGroup;
 			children = (
 				C0AF7AD03042F1B0001565E7 /* Menu 2FA */,
+				C0SH7AD03042F1B0001565E7 /* Shared */,
+				C0WD7AD03042F1B0001565E7 /* Menu 2FA Widget */,
+				C0IN7AD03042F1B0001565E7 /* Menu 2FA Intents */,
 				C0AF7ACF3042F1B0001565E7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +159,9 @@
 		C0AF7ACF3042F1B0001565E7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C0AF7ACE3042F1B0001565E7 /* Menu 2FA.app */,
+				C0AF7ACE3042F1B0001565E7 /* 2FA.app */,
+				C0WD7ACE3042F1B0001565E7 /* Menu 2FA Widget.appex */,
+				C0IN7ACE3042F1B0001565E7 /* Menu 2FA Intents.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,21 +176,71 @@
 				C0AF7ACA3042F1B0001565E7 /* Sources */,
 				C0AF7ACB3042F1B0001565E7 /* Frameworks */,
 				C0AF7ACC3042F1B0001565E7 /* Resources */,
+				C0EM7ACC3042F1B0001565E7 /* Embed Foundation Extensions */,
 				A1B2C3D43042F1B0001565E7 /* Strip Quarantine Xattrs */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0WD7ATD3042F1B0001565E7 /* PBXTargetDependency */,
+				C0IN7ATD3042F1B0001565E7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0AF7AD03042F1B0001565E7 /* Menu 2FA */,
+				C0SH7AD03042F1B0001565E7 /* Shared */,
+			);
+			name = "Menu 2FA";
+			packageProductDependencies = (
+			);
+			productName = 2FA;
+			productReference = C0AF7ACE3042F1B0001565E7 /* 2FA.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C0WD7ACD3042F1B0001565E7 /* Menu 2FA Widget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0WD7AD93042F1B0001565E7 /* Build configuration list for PBXNativeTarget "Menu 2FA Widget" */;
+			buildPhases = (
+				C0WD7ACA3042F1B0001565E7 /* Sources */,
+				C0WD7ACB3042F1B0001565E7 /* Frameworks */,
+				C0WD7ACC3042F1B0001565E7 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				C0AF7AD03042F1B0001565E7 /* Menu 2FA */,
+				C0WD7AD03042F1B0001565E7 /* Menu 2FA Widget */,
+				C0SH7AD03042F1B0001565E7 /* Shared */,
 			);
-			name = "Menu 2FA";
+			name = "Menu 2FA Widget";
 			packageProductDependencies = (
 			);
-			productName = "Menu 2FA";
-			productReference = C0AF7ACE3042F1B0001565E7 /* Menu 2FA.app */;
-			productType = "com.apple.product-type.application";
+			productName = "Menu 2FA Widget";
+			productReference = C0WD7ACE3042F1B0001565E7 /* Menu 2FA Widget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		C0IN7ACD3042F1B0001565E7 /* Menu 2FA Intents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0IN7AD93042F1B0001565E7 /* Build configuration list for PBXNativeTarget "Menu 2FA Intents" */;
+			buildPhases = (
+				C0IN7ACA3042F1B0001565E7 /* Sources */,
+				C0IN7ACB3042F1B0001565E7 /* Frameworks */,
+				C0IN7ACC3042F1B0001565E7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C0IN7AD03042F1B0001565E7 /* Menu 2FA Intents */,
+				C0SH7AD03042F1B0001565E7 /* Shared */,
+			);
+			name = "Menu 2FA Intents";
+			packageProductDependencies = (
+			);
+			productName = "Menu 2FA Intents";
+			productReference = C0IN7ACE3042F1B0001565E7 /* Menu 2FA Intents.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -82,6 +253,12 @@
 				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					C0AF7ACD3042F1B0001565E7 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					C0WD7ACD3042F1B0001565E7 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					C0IN7ACD3042F1B0001565E7 = {
 						CreatedOnToolsVersion = 26.6;
 					};
 				};
@@ -122,12 +299,28 @@
 			projectRoot = "";
 			targets = (
 				C0AF7ACD3042F1B0001565E7 /* Menu 2FA */,
+				C0WD7ACD3042F1B0001565E7 /* Menu 2FA Widget */,
+				C0IN7ACD3042F1B0001565E7 /* Menu 2FA Intents */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C0AF7ACC3042F1B0001565E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0WD7ACC3042F1B0001565E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0IN7ACC3042F1B0001565E7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -154,7 +347,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# ITMS-91109: App Store rejects com.apple.quarantine on packaged files\nif [ -d \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" ]; then\n  /usr/bin/xattr -cr \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" || true\nfi\n";
+			shellScript = "if [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  RES=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\n  mkdir -p \"$RES\"\n  cp \"${SRCROOT}/Configuration.storekit\" \"$RES/Configuration.storekit\"\n  FW_SRC=\"${DEVELOPER_DIR}/Platforms/MacOSX.platform/Developer/Library/Frameworks/StoreKitTest.framework\"\n  FW_DST=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}/Contents/Frameworks\"\n  if [ -d \"$FW_SRC\" ]; then\n    mkdir -p \"$FW_DST\"\n    rm -rf \"$FW_DST/StoreKitTest.framework\"\n    cp -R \"$FW_SRC\" \"$FW_DST/\"\n    /usr/bin/codesign --force --deep --sign \"${EXPANDED_CODE_SIGN_IDENTITY:--}\" --timestamp=none \"$FW_DST/StoreKitTest.framework\" || true\n  fi\nfi\n# ITMS-91109: App Store rejects com.apple.quarantine on packaged files\nif [ -d \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" ]; then\n  /usr/bin/xattr -cr \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\" || true\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -166,7 +359,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0WD7ACA3042F1B0001565E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0IN7ACA3042F1B0001565E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C0WD7ATD3042F1B0001565E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0WD7ACD3042F1B0001565E7 /* Menu 2FA Widget */;
+			targetProxy = C0WD7ACP3042F1B0001565E7 /* PBXContainerItemProxy */;
+		};
+		C0IN7ATD3042F1B0001565E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0IN7ACD3042F1B0001565E7 /* Menu 2FA Intents */;
+			targetProxy = C0IN7ACP3042F1B0001565E7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C0AF7AD73042F1B1001565E7 /* Debug */ = {
@@ -294,17 +514,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Menu 2FA/Menu_2FA.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Menu 2FA/Menu_2FA.Debug.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = AUP84ZCD2B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Menu 2FA";
+				INFOPLIST_FILE = "Menu 2FA/SupportingInfo.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = 2FA;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -314,9 +536,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "ga.sgroi.menu-2fa";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = 2FA;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -334,14 +556,15 @@
 				CODE_SIGN_ENTITLEMENTS = "Menu 2FA/Menu_2FA.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = AUP84ZCD2B;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Menu 2FA";
+				INFOPLIST_FILE = "Menu 2FA/SupportingInfo.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = 2FA;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -351,14 +574,152 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "ga.sgroi.menu-2fa";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = 2FA;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C0WD7ADA3042F1B0001565E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Menu 2FA Widget/Menu_2FA_Widget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = AUP84ZCD2B;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Menu 2FA Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = 2FA;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Gabriel Sgroi. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.5;
+				PRODUCT_BUNDLE_IDENTIFIER = "ga.sgroi.menu-2fa.widget";
+				PRODUCT_NAME = "Menu 2FA Widget";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C0WD7ADB3042F1B0001565E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Menu 2FA Widget/Menu_2FA_Widget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = AUP84ZCD2B;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Menu 2FA Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = 2FA;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Gabriel Sgroi. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.5;
+				PRODUCT_BUNDLE_IDENTIFIER = "ga.sgroi.menu-2fa.widget";
+				PRODUCT_NAME = "Menu 2FA Widget";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C0IN7ADA3042F1B0001565E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Menu 2FA Intents/Menu_2FA_Intents.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = AUP84ZCD2B;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Menu 2FA Intents/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "2FA Intents";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Gabriel Sgroi. All rights reserved.";
+				INTENTS_CODEGEN_LANGUAGE = Swift;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.5;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Intents,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "ga.sgroi.menu-2fa.intents";
+				PRODUCT_MODULE_NAME = Menu2FAIntents;
+				PRODUCT_NAME = "Menu 2FA Intents";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C0IN7ADB3042F1B0001565E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Menu 2FA Intents/Menu_2FA_Intents.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 11;
+				DEVELOPMENT_TEAM = AUP84ZCD2B;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Menu 2FA Intents/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "2FA Intents";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Gabriel Sgroi. All rights reserved.";
+				INTENTS_CODEGEN_LANGUAGE = Swift;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.5;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Intents,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "ga.sgroi.menu-2fa.intents";
+				PRODUCT_MODULE_NAME = Menu2FAIntents;
+				PRODUCT_NAME = "Menu 2FA Intents";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -380,6 +741,24 @@
 			buildConfigurations = (
 				C0AF7ADA3042F1B1001565E7 /* Debug */,
 				C0AF7ADB3042F1B1001565E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0WD7AD93042F1B0001565E7 /* Build configuration list for PBXNativeTarget "Menu 2FA Widget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0WD7ADA3042F1B0001565E7 /* Debug */,
+				C0WD7ADB3042F1B0001565E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0IN7AD93042F1B0001565E7 /* Build configuration list for PBXNativeTarget "Menu 2FA Intents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0IN7ADA3042F1B0001565E7 /* Debug */,
+				C0IN7ADB3042F1B0001565E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

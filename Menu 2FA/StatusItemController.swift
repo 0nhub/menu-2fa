@@ -43,7 +43,7 @@ final class StatusItemController: NSObject {
 
     private func configure(button: NSStatusBarButton) {
         let configuration = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
-        let lock = NSImage(systemSymbolName: "lock.fill", accessibilityDescription: String(localized: "Menu 2FA"))?.withSymbolConfiguration(configuration)
+        let lock = NSImage(systemSymbolName: "lock.fill", accessibilityDescription: String(localized: "2FA"))?.withSymbolConfiguration(configuration)
         lock?.isTemplate = true
         lockImage = lock
 
@@ -55,8 +55,8 @@ final class StatusItemController: NSObject {
         button.title = ""
         button.imagePosition = .imageOnly
         button.imageScaling = .scaleProportionallyDown
-        button.toolTip = String(localized: "Menu 2FA")
-        button.setAccessibilityTitle(String(localized: "Menu 2FA"))
+        button.toolTip = String(localized: "2FA")
+        button.setAccessibilityTitle(String(localized: "2FA"))
         button.wantsLayer = true
         button.sendAction(on: [.leftMouseDown, .rightMouseDown])
         button.action = #selector(handleClick(_:))
@@ -133,7 +133,7 @@ final class StatusItemController: NSObject {
             menuItem.target = self
             menuItem.representedObject = item.id.uuidString
             menuItem.isEnabled = store.currentCode(for: item) != nil
-            menuItem.image = item.menuIcon(size: 16)
+            menuItem.setMenuImage(item.menuIcon(size: 16))
             menuItem.toolTip = String(localized: "Copy code")
             menuItem.keyEquivalentModifierMask = []
             menu.addItem(menuItem)
@@ -148,8 +148,10 @@ final class StatusItemController: NSObject {
         menu.addItem(ContextMenuRow.settings.menuItem())
         menu.addItem(ContextMenuRow.requireAuthentication.menuItem())
         menu.addItem(ContextMenuRow.launchAtLogin.menuItem())
+        menu.addItem(.separator())
         menu.addItem(ContextMenuRow.support.menuItem())
         menu.addItem(ContextMenuRow.moreApps.menuItem())
+        menu.addItem(.separator())
         menu.addItem(ContextMenuRow.quit.menuItem())
         return menu
     }
@@ -224,6 +226,15 @@ final class StatusItemController: NSObject {
         button.image = lockImage
         button.title = ""
         button.imagePosition = .imageOnly
+    }
+}
+
+private extension NSMenuItem {
+    func setMenuImage(_ image: NSImage) {
+        self.image = image
+        if #available(macOS 27.0, *) {
+            preferredImageVisibility = .visible
+        }
     }
 }
 

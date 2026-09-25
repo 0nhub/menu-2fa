@@ -52,6 +52,14 @@ struct LaunchItem: Identifiable, Codable, Equatable, Hashable {
         displayIcon(size: 64)
     }
 
+    func widgetIconPNG(size: CGFloat = 72) -> Data? {
+        let image = Self.rasterizedForMenu(displayIcon(size: size), logicalSize: size)
+        guard let tiff = image.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff)
+        else { return nil }
+        return rep.representation(using: .png, properties: [:])
+    }
+
     func displayIcon(size: CGFloat) -> NSImage {
         if let iconData, let image = NSImage(data: iconData) {
             return Self.squared(image, size: size)
@@ -66,7 +74,7 @@ struct LaunchItem: Identifiable, Codable, Equatable, Hashable {
     }
 
     func menuIcon(size: CGFloat = 16) -> NSImage {
-        displayIcon(size: size)
+        Self.rasterizedForMenu(displayIcon(size: size), logicalSize: size)
     }
 
     static func normalizedEmoji(_ raw: String?) -> String? {
@@ -150,6 +158,47 @@ struct LaunchItem: Identifiable, Codable, Equatable, Hashable {
         )
         output.unlockFocus()
         return output
+    }
+
+    /// macOS 26+ hides many menu images (especially SF Symbols). Rasterize to a bitmap rep so icons stay visible.
+    static func rasterizedForMenu(_ source: NSImage, logicalSize: CGFloat) -> NSImage {
+        let scale = NSScreen.main?.backingScaleFactor ?? 2
+        let pixels = max(1, Int((logicalSize * scale).rounded(.up)))
+        guard let rep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: pixels,
+            pixelsHigh: pixels,
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        ) else {
+            return source
+        }
+        rep.size = NSSize(width: logicalSize, height: logicalSize)
+
+        NSGraphicsContext.saveGraphicsState()
+        defer { NSGraphicsContext.restoreGraphicsState() }
+        guard let context = NSGraphicsContext(bitmapImageRep: rep) else { return source }
+        NSGraphicsContext.current = context
+        context.imageInterpolation = .high
+
+        source.draw(
+            in: NSRect(x: 0, y: 0, width: logicalSize, height: logicalSize),
+            from: .zero,
+            operation: .sourceOver,
+            fraction: 1,
+            respectFlipped: false,
+            hints: [.interpolation: NSImageInterpolation.high]
+        )
+
+        let menuImage = NSImage(size: NSSize(width: logicalSize, height: logicalSize))
+        menuImage.addRepresentation(rep)
+        menuImage.isTemplate = false
+        return menuImage
     }
 }
 
